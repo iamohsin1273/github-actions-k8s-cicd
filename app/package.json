@@ -1,9 +1,15 @@
 {
   "name": "github-actions-cicd",
   "version": "1.0.0",
+  "description": "Tiny Express app used to demonstrate a GitHub Actions to Kubernetes CI/CD pipeline",
+  "private": true,
+  "main": "server.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server.js",
-    "test": "echo Tests Passed"
+    "test": "node --test"
   },
   "dependencies": {
     "express": "^4.19.2"

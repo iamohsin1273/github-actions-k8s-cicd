@@ -3,8 +3,16 @@ kind: Deployment
 metadata:
   name: devops-demo
   namespace: devops-demo
+  labels:
+    app: devops-demo
 spec:
   replicas: 2
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: devops-demo
@@ -15,6 +23,34 @@ spec:
     spec:
       containers:
       - name: app
-        image: USERNAME/devops-demo:latest
+        # The CD workflow replaces the tag with the commit SHA on every deploy.
+        image: ghcr.io/iamohsin1273/github-actions-k8s-cicd:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
+        env:
+        - name: PORT
+          value: "3000"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000

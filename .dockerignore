@@ -1,3 +1,9 @@
 node_modules
+npm-debug.log
 .git
 .github
+.gitignore
+k8s
+scripts
+README.md
+**/test

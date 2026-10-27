@@ -1,15 +1,35 @@
 name: CI
+
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  test-and-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: cd app && npm install
-      - run: cd app && npm test
-      - run: docker build -t test-image .
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+        working-directory: app
+
+      - name: Run tests
+        run: npm test
+        working-directory: app
+
+      - name: Build Docker image (no push)
+        run: docker build -t test-image .

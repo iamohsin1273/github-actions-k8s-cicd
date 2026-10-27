@@ -5,3 +5,15 @@ metadata:
   namespace: devops-demo
 spec:
   ingressClassName: nginx
+  rules:
+  # No host set, so the app answers on the ingress controller's address.
+  # Add `host: demo.example.com` here to route by domain name.
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: devops-demo-service
+            port:
+              number: 80
